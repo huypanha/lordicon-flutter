@@ -264,7 +264,6 @@ class IconViewerState extends State<IconViewer> with TickerProviderStateMixin {
   late IconController _controller;
   late double _width;
   late double _height;
-  late Color? _colorize;
 
   @override
   void initState() {
@@ -273,7 +272,6 @@ class IconViewerState extends State<IconViewer> with TickerProviderStateMixin {
     _controller = widget.controller;
     _width = widget.width;
     _height = widget.height;
-    _colorize = widget.colorize;
   }
 
   @override
@@ -285,42 +283,43 @@ class IconViewerState extends State<IconViewer> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    var delegates = _colorize != null
-        ? LottieDelegates(
-            values: [
-              ValueDelegate.color(
-                const ['**'],
-                value: _colorize,
-              ),
-              ValueDelegate.strokeColor(
-                const ['**'],
-                value: _colorize,
-              ),
-            ],
-          )
-        : null;
+    var delegates = widget.colorize != null
+      ? LottieDelegates(
+        values: [
+          ValueDelegate.color(
+            const ['**'],
+            value: widget.colorize,
+          ),
+          ValueDelegate.strokeColor(
+            const ['**'],
+            value: widget.colorize,
+          ),
+        ],
+        )
+      : null;
 
     return ListenableBuilder(
-        listenable: _controller,
-        builder: (BuildContext context, Widget? child) {
-          if (_controller._composition == null) {
-            return SizedBox(
-              width: _width,
-              height: _height,
-            );
-          }
-
-          if (!_controller.isReady) {
-            _controller._initialize(this);
-          }
-
-          return Lottie(
-            composition: _controller._composition,
-            controller: _controller._controller,
+      listenable: _controller,
+      builder: (BuildContext context, Widget? child) {
+        if (_controller._composition == null) {
+          return SizedBox(
             width: _width,
             height: _height,
-            delegates: delegates,
           );
-        });
+        }
+
+        if (!_controller.isReady) {
+          _controller._initialize(this);
+        }
+
+        return Lottie(
+          composition: _controller._composition,
+          controller: _controller._controller,
+          width: _width,
+          height: _height,
+          delegates: delegates,
+        );
+      },
+    );
   }
 }
